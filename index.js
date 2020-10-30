@@ -21,7 +21,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }))
-var sertis_cards = [];
 var con = mysql.createConnection({
   host: "db4free.net", //or localhost
   user: "kukkui", //mysql username
@@ -77,21 +76,14 @@ app.get('/session', (req, res) => {
 
 //*************CHECK ACCOUNT**********************************//////////////////
 app.post('/auth', (req, res) => {
-    const new_card = {
-        id: sertis_cards.length + 1,
-        username: req.body.username,
-        password: req.body.password
-        // content: req.body.content,
-        // author: req.body.author
-    };
-    sertis_cards.push(new_card);
+    
     var password = generator.generate({
         length: 10,
         numbers: true
     });
      
-    var account = new_card.username;
-    var password = new_card.password;
+    var account = req.body.username;
+    var password = req.body.password;
     //
     //Now...
     //set session for one time body request
@@ -134,14 +126,7 @@ app.post('/auth', (req, res) => {
 
 //*************VIEW PERSONAL BLOGS****************************//////////////////
 app.post('/api/myPost', (req, res) => {
-    const new_card = {
-        id: sertis_cards.length + 1,
-        username: req.body.username,
-        password: req.body.password
-        // content: req.body.content,
-        // author: req.body.author
-    };
-    sertis_cards.push(new_card);
+    
     var password = generator.generate({
         length: 10,
         numbers: true
@@ -195,13 +180,6 @@ app.post('/api/myPost', (req, res) => {
 
 //*************VIEW PERSONAL BLOGS****************************//////////////////
 app.post('/api/addPost', (req, res) => {
-  const new_card = {
-      id: sertis_cards.length + 1,
-      username: req.body.username,
-      password: req.body.password
-      // content: req.body.content,
-      // author: req.body.author
-  };
 
   // var username = req.body.username;
   var content = req.body.content;
@@ -254,21 +232,14 @@ app.post('/api/addPost', (req, res) => {
 
 //*************VIEW ALL BLOGS POST BY ANYONE******************//////////////////
 app.post('/api/allPost', (req, res) => {
-  const new_card = {
-      id: sertis_cards.length + 1,
-      username: req.body.username,
-      password: req.body.password
-      // content: req.body.content,
-      // author: req.body.author
-  };
-  sertis_cards.push(new_card);
+  
   var password = generator.generate({
       length: 10,
       numbers: true
   });
    
-  var account = new_card.username;
-  var password = new_card.password;
+  var account = req.body.username;
+  var password = req.body.password;
   
     const querystring="SELECT * FROM blogposts";
                   con.query(querystring, function (err, result, fields) {
@@ -322,36 +293,21 @@ app.put('/api/editPost/:id', (req, res) => {
                 res.send("Wrong Password For Username : " + account) // Please login with your password that we assigned to you at the first time.")
               }
               else{
-              //console.log("Problem Here");
-              //console.log("Already add new post for account name: "+account+" \nWith Content: "+content+"\nWith cardName: "+cardName+"\nWith cardStatus: "+cardStatus+"\nWith cardContent: "+cardContent+"\nWith cardCategory: "+cardCategory);
-              //problem here
               var sql = "UPDATE blogposts SET content = '"+content2+"',cardName = '"+cardName2+"',cardStatus = '"+cardStatus2+"',cardContent = '"+cardContent2+"',cardCategory = '"+cardCategory2+"' WHERE id = '"+id+"' AND username = '"+account+"'";
               con.query(sql, function (err, result) {
                 if (err) throw err;
-                res.send("record(s) updated");
+                res.send("Edit Process Completed \n!!Note : If you still see the record even you've edited its\nPlease remind that you have edit the post that's not belong to you!");
               })
             }
           })
         }
     })
-  // const postFound = sess.allposts.find(m => m.id === parseInt(req.body.id));
-  // res.send(postFound);
   });
+  
 //*************DELETE PERSONAL BLOGS**************************//////////////////
 app.delete('/api/deletePost/:id', (req, res) => {
   var id = req.params.id;
-  var content = req.body.content;
-  var cardName = req.body.cardName;
-  var cardStatus = req.body.cardStatus;
-  var cardContent = req.body.cardContent;
-  var cardCategory = req.body.cardCategory;
-
-  var content2 = content.replace("'","''");
-  var cardName2 = cardName.replace("'","''");
-  var cardStatus2 = cardStatus.replace("'","''");
-  var cardContent2 = cardContent.replace("'","''");
-  var cardCategory2 = cardCategory.replace("'","''");
-
+ 
   let sess = req.session
   var account = sess.username
   var password = sess.password 
@@ -370,9 +326,6 @@ app.delete('/api/deletePost/:id', (req, res) => {
                 res.send("Wrong Password For Username : " + account) // Please login with your password that we assigned to you at the first time.")
               }
               else{
-              //console.log("Problem Here");
-              //console.log("Already add new post for account name: "+account+" \nWith Content: "+content+"\nWith cardName: "+cardName+"\nWith cardStatus: "+cardStatus+"\nWith cardContent: "+cardContent+"\nWith cardCategory: "+cardCategory);
-              //problem here
               var sql = "DELETE FROM blogposts WHERE id = '"+id+"' AND username = '"+account+"'";
               con.query(sql, function (err, result) {
                 if (err) throw err;
@@ -382,20 +335,8 @@ app.delete('/api/deletePost/:id', (req, res) => {
           })
         }
 
-  // const postFound = sess.allposts.find(m => m.id === parseInt(req.body.id));
-  // res.send(postFound);
   })
-    // const new_card = sertis_cards.find(m => m.id === parseInt(req.params.id));
-    // if(!new_card) {
-    // res.status(404).send('The new_card with the given ID was not found ')
-    // }
-    // else {
-    // const index = sertis_cards.indexOf(new_card);
-    // sertis_cards.splice(index, 1);
-    // res.send(new_card);
-    // };
-    //Remove existing blog card via PUT 
-    //Activate on url : http://[localhost]:[port]/deleteCard/[id]
+    
 });
 
 const port = process.env.PORT || 5000
