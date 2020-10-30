@@ -23,10 +23,10 @@ app.use(session({
 }))
 var sertis_cards = [];
 var con = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "kukkui",
-  password: "kukkui",
-  database: "kukkui"
+  host: "db4free.net", //or localhost
+  user: "kukkui", //mysql username
+  password: "Kukkui2537", //mysql password
+  database: "kukkui" //db
 });
 con.connect();
 //*************DEFAULT INDEX WITH SESSION,DB,TABLE CREATE*****//////////////////
